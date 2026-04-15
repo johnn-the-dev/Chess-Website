@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, List, Tuple, Optional
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from constants import ValidMoves, Position, Color
 
 if TYPE_CHECKING:
@@ -85,17 +86,27 @@ class Pawn(Piece):
                 if board.is_within_bounds(new_col, new_row):
                     target_piece = board.get_piece(new_col, new_row)
 
+                    if col_move == 0 and row_move == -1 and target_piece is None:
+                        valid_moves.append((new_col, new_row))                                                  #basic move
+
                     if col_move == 0 and row_move == -2 and row == 6 and target_piece is None:
                         jump_piece = board.get_piece(new_col, new_row + 1)
                         
                         if jump_piece is None:
                             valid_moves.append((new_col, new_row))                                              #first move 2 steps
 
-                    if col_move == 0 and row_move == -1 and target_piece is None:
-                        valid_moves.append((new_col, new_row))                                                  #basic move
-
                     if abs(col_move) == 1 and row_move == -1 and target_piece is not None and target_piece.color != self.color:
                         valid_moves.append((new_col, new_row))                                                  #capture
+
+            if board.move_history:
+                last_move = board.move_history[-1]
+
+                if isinstance(last_move["piece"], Pawn) and last_move["piece"].color != self.color:
+
+                    if abs(last_move["start"][1] - last_move["end"][1]) == 2:
+
+                        if abs(col - last_move["end"][0]) == 1 and row == last_move["end"][1]:
+                            valid_moves.append((last_move["end"][0], row - 1))                                  #en passante
 
         else:
             for col_move, row_move in movement_black:
@@ -105,17 +116,27 @@ class Pawn(Piece):
                 if board.is_within_bounds(new_col, new_row):
                     target_piece = board.get_piece(new_col, new_row)
 
+                    if col_move == 0 and row_move == 1 and target_piece is None:
+                        valid_moves.append((new_col, new_row))                                                  #basic move
+
                     if col_move == 0 and row_move == 2 and row == 1 and target_piece is None:
                         jump_piece = board.get_piece(new_col, new_row - 1)
 
                         if jump_piece is None:
                             valid_moves.append((new_col, new_row))                                              #first move 2 steps
 
-                    if col_move == 0 and row_move == 1 and target_piece is None:
-                        valid_moves.append((new_col, new_row))                                                  #basic move
-
                     if abs(col_move) == 1 and row_move == 1 and target_piece is not None and target_piece.color != self.color:
                         valid_moves.append((new_col, new_row))                                                  #capture
+
+            if board.move_history:
+                last_move = board.move_history[-1]
+
+                if isinstance(last_move["piece"], Pawn) and last_move["piece"].color != self.color:
+
+                    if abs(last_move["start"][1] - last_move["end"][1]) == 2:
+
+                        if abs(last_move["start"][0] - last_move["end"][0]) == 1 and row == last_move["end"][1]:
+                            valid_moves.append((last_move["end"][0], row + 1))                                  #en passante
 
         return valid_moves
 

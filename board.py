@@ -1,12 +1,58 @@
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional
 from constants import ValidMoves, Position, Color, Grid
-from pieces import Piece, Color, King, Pawn
+from pieces import Piece, Color, Pawn, King, Queen, Bishop, Knight, Rook
 
 class Board:
     def __init__(self) -> None:
         self.grid: Grid = [[None for _ in range(8)] for _ in range(8)]
         self.move_history: List[dict] = []
-    
+        self.setup_board()
+
+    def setup_board(self) -> None:
+        for col in range(8):
+            self.grid[col][1] = Pawn(Color.BLACK, (col, 1)) #Black
+            self.grid[col][6] = Pawn(Color.WHITE, (col, 6)) #White
+
+        other_pieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
+        for col, piece_class in enumerate(other_pieces):
+            self.grid[col][0] = piece_class(Color.BLACK, (col, 0)) #Black
+            self.grid[col][7] = piece_class(Color.WHITE, (col, 7)) #White
+
+    def get_fen(self) -> str:
+        piece_to_char = {King: 'k', Queen: 'q', Rook: 'r', Bishop: 'b', Knight: 'n', Pawn: 'p'}
+        result = ""
+
+        for row in range(8):
+            empty_spot = 0
+
+            for col in range(8):
+                piece = self.grid[col][row]
+
+                if piece is None:
+                    empty_spot += 1
+
+                else:
+                    if empty_spot > 0:
+                        result += str(empty_spot)
+                        empty_spot = 0
+
+                    char = piece_to_char[type(piece)]
+
+                    if piece.color == Color.WHITE:
+                        char = char.upper()
+
+                    result += f"{char}"
+            
+            if empty_spot > 0:
+                result += str(empty_spot)
+
+            if row < 7:
+                result += "/"
+
+        return result
+
+
     def is_within_bounds(self, col: int, row: int) -> bool:
         return 0 <= col < 8 and 0 <= row < 8
     
