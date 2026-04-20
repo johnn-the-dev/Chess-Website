@@ -1,0 +1,27 @@
+#board {
+    width: 400px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    border: 2px solid #333;
+}
+
+.black, .white {
+    width: 100%;
+    height: 100%;
+}
+
+.black {
+    background-color: brown;
+}
+                                    /*later going to be assets*/
+.white {
+    background-color: darkgrey;
+}
+
+.piece {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, List, Optional
-from constants import ValidMoves, Position, Color, Grid
-from pieces import Piece, Color, Pawn, King, Queen, Bishop, Knight, Rook
+from backend.game_logic.constants import ValidMoves, Position, Color, Grid
+from backend.game_logic.pieces import Piece, Color, Pawn, King, Queen, Bishop, Knight, Rook
 
 class Board:
     def __init__(self) -> None:
@@ -52,7 +52,6 @@ class Board:
 
         return result
 
-
     def is_within_bounds(self, col: int, row: int) -> bool:
         return 0 <= col < 8 and 0 <= row < 8
     
@@ -103,7 +102,6 @@ class Board:
         king_position = self.find_king(piece_color)
         enemy_color = Color.BLACK if moving_piece.color == Color.WHITE else Color.WHITE
         
-
         if king_position:
             is_in_check = self.is_square_attacked(king_position, enemy_color)
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from constants import ValidMoves, Position, Color
+from backend.game_logic.constants import ValidMoves, Position, Color
 
 if TYPE_CHECKING:
-    from board import Board
+    from backend.game_logic.board import Board
 
 class Piece():
     def __init__(self, color: Color, position: Position) -> None:
