@@ -1,27 +1,59 @@
+:root {
+    --board-light: #ebecd0;
+    --board-dark: #739552;
+    --board-border: #2c2c2c;
+}
+
+body {
+    background-color: #1e1e1e; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
 #board {
-    width: 400px;
-    height: 400px;
+    width: 480px;
+    height: 480px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    border: 2px solid #333;
+    
+    border: 8px solid var(--board-border);
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
 .black, .white {
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .black {
-    background-color: brown;
+    background-color: var(--board-dark);
 }
-                                    /*later going to be assets*/
+
 .white {
-    background-color: darkgrey;
+    background-color: var(--board-light);
 }
 
 .piece {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.4));
+    
+    cursor: grab;
+    transition: transform 0.1s ease;
+}
+
+.piece:active {
+    cursor: grabbing;
+    transform: scale(1.1);
 }
