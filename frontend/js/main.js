@@ -21,7 +21,7 @@ const chessAssets = {
 };
 
 let startMove = null;
-
+let currentFen = "";
 const boardElement = document.getElementById("board");
 
 for (let row = 0; row < 8; row++) {
@@ -58,7 +58,7 @@ function handleSquareClick(event) {
         const uciMove = startMove + endMove;
 
         console.log("Player made move:", uciMove);
-        //sendMoveToBackend(uciMove);
+        submitMove(uciMove);
         startMove = null;
     };
 };
@@ -94,17 +94,71 @@ function loadFEN(fenString) {
 
 async function fetchBoardState() {
     try {
-        const response = await fetch("http://127.0.0.1:8000/test");
+        const response = await fetch("http://127.0.0.1:8000/api/start");
         
         if (!response.ok) {
             throw new Error(`HTTP ERROR! Status: ${response.status}`);
         };
 
         const data = await response.json();
-
-        loadFEN(data.fen);
+        currentFen = data.fen;
+        loadFEN(currentFen);
 
     } catch (error) {
-        console.error("Could not load the game state:", error);
-    };
+        console.error("Error loading the game:", error);
+    }
+}
+
+async function fetchAnalysis(fenString) {
+    try {
+        console.log("Sending FEN:", fenString);
+        const response = await fetch("http://127.0.0.1:8000/api/analyse", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ fen: fenString })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Backend error: ${errorData.detail}`);
+        }
+
+        const data = await response.json();
+        console.log("Stockfish finished analysis.");
+        console.log("Best move:", data.best_move);
+        console.log("Score:", data.score);
+    } catch (error) {
+        console.error("Analysis failed:", error);
+    }
 };
+
+async function submitMove(uciMove) {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/move", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fen: currentFen, move: uciMove })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.warn("Illegal move:", errorData.detail);
+
+            return; 
+        }
+
+        const data = await response.json();
+        currentFen = data.fen;
+        loadFEN(currentFen);
+        
+        fetchAnalysis(currentFen); 
+
+    } catch (error) {
+        console.error("Error sending move:", error);
+    }
+}
+
+fetchBoardState();
+fetchAnalysis("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
